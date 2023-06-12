@@ -150,7 +150,7 @@ El funcionamiento integral del sistema se basa en la interacción de los compone
 
 **Esquema de conexiones**
 
-![Esquema de Conexiones](Esquema.PNG "Esquema DE CONEXIONES")
+![Esquema de Conexiones](Esquema.png "Esquema DE CONEXIONES")
 
 
 
