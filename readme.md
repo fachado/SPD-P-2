@@ -142,10 +142,25 @@ void cambiarEstacion(String nuevaEstacion) {
 El funcionamiento integral del sistema se basa en la interacción de los componentes y la ejecución del código en Arduino. Se realiza la lectura de la temperatura, se comprueba si se ha superado el umbral establecido y se activa el servo motor en caso de detectar un incendio. Toda la información relevante se muestra en el display LCD para una fácil visualización.
 
 
+**🤖LINK DEL PROYECTO🤖**
+## https://www.tinkercad.com/things/7zy63Jt5Htp-parcxial-2/editel?sharecode=hm2Uqif0SNmozgRsf01X25oB13_tBMCXdBPJn0KJdpA
+
+**
+
+
+**Esquema de conexiones**
+
+![Esquema de Conexiones](Esquema.PNG "Esquema DE CONEXIONES")
+
+
+
+
+
+
+**CODIGO COMPLETO**
+
 
 ```arduino
-
-   // Definiciones
 #include <IRremote.h>
 #include <LiquidCrystal.h>
 #include <IRremote.h>
@@ -170,22 +185,17 @@ El funcionamiento integral del sistema se basa en la interacción de los compone
 
 LiquidCrystal lcd(PIN_LCD_RS, PIN_LCD_EN, PIN_LCD_D4, PIN_LCD_D5, PIN_LCD_D6, PIN_LCD_D7);
 
+
 Servo servoMotor;
 
 // Umbral de temperatura para cada estación (en grados Celsius)
-int umbralVerano = 60;
-int umbralPrimavera = 50;
-int umbralOtono = 70;
-int umbralInvierno = 80;
+int umbralVerano = 70;
+int umbralPrimavera = 60;
+int umbralOtono = 50;
+int umbralInvierno = 40;
 
 bool sistemaActivado = false;
 String estacion = "";
-
-//...
-```
-
-```arduino
-//VOID SETUP
 
 void setup() {
   lcd.begin(16, 2);
@@ -197,12 +207,6 @@ void setup() {
   pinMode(PIN_LED_1, OUTPUT);
   pinMode(PIN_LED_2, OUTPUT);
 }
-
-
-//...
-```
-```arduino
-//void loop principal
 
 void loop() {
   manejarControlRemoto();
@@ -231,6 +235,99 @@ void loop() {
   } else {
     digitalWrite(PIN_LED_2, LOW);
     
+  }
+}
+
+int leerTemperatura() {
+  int valorSensor = analogRead(SENSOR_TEMPERATURA);
+  int temperatura = map(valorSensor, 20, 358, -40, 125); // Mapea los valores de temperatura al rango -40 a 125 grados Celsius
+  return temperatura;
+}
+
+int obtenerUmbralEstacion(String estacion) {
+  if (estacion == "Verano") {
+    return umbralVerano;
+  } else if (estacion == "Primavera") {
+    return umbralPrimavera;
+  } else if (estacion == "Otonio") {
+    return umbralOtono;
+  } else if (estacion == "Invierno") {
+    return umbralInvierno;
+  } 
+}
+
+void activarAlarma() {
+  if (estacion != "") { // Verificar si la estación es válida para no disparar la alrma
+    lcd.clear();
+    lcd.print("¡Fuego detectado!");
+    servoMotor.write(90); // Abre el servo motor para simular una respuesta del sistema de incendio
+    delay(5000); // Mantiene el servo motor abierto durante 5 segundos
+    servoMotor.write(0);// Cierra el servo motor
+    lcd.clear();
+  }
+}
+
+void activarSistema() {
+  sistemaActivado = true;
+}
+
+void desactivarSistema() {
+  lcd.clear();
+  lcd.print("Sistema ");
+  lcd.setCursor(0, 1);
+  lcd.print("desactivado");
+  sistemaActivado = false;
+  delay(2000);
+  lcd.clear(); // Limpia el LCD al desactivar el sistema
+}
+
+void cambiarEstacion(String nuevaEstacion) {
+  estacion = nuevaEstacion;
+}
+
+void manejarControlRemoto() {
+  if (IrReceiver.decode()) {
+    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX);
+
+    if (IrReceiver.decodedIRData.decodedRawData == power) // Código para activar el sistema
+    {
+      activarSistema();
+      lcd.clear();
+      lcd.print("Sistema activado");
+      delay(2000);
+      lcd.clear();
+    }
+
+    if (sistemaActivado) {
+      if (IrReceiver.decodedIRData.decodedRawData == stop)  // Código para desactivar el sistema
+      {
+        desactivarSistema();
+        lcd.clear();
+  
+      }
+
+      if (IrReceiver.decodedIRData.decodedRawData == Tecla_1) // Código para cambiar la estación a Invierno
+      {
+        cambiarEstacion("Invierno");
+      }
+
+      if (IrReceiver.decodedIRData.decodedRawData == Tecla_2) // Código para cambiar la estación a Otoño
+      {
+        cambiarEstacion("Otonio");
+      }
+
+      if (IrReceiver.decodedIRData.decodedRawData == Tecla_3) // Código para cambiar la estación a Verano
+      {
+        cambiarEstacion("Verano");
+      }
+
+      if (IrReceiver.decodedIRData.decodedRawData == Tecla_4) // Código para cambiar la estación a Primavera
+      {
+        cambiarEstacion("Primavera");
+      }
+    }
+
+    IrReceiver.resume(); // Reanuda la recepción de códigos IR
   }
 }
 ```
