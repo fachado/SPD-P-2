@@ -13,7 +13,7 @@ El sistema de incendio con Arduino tiene como objetivo detectar cambios de tempe
 
 
 
-![Diagrama de Conexiones](CONEXIONES.PNG "DIAGRAMA DE CONEXIONES")
+![Diagrama de Conexiones](CONEXIONES.jpeg "DIAGRAMA DE CONEXIONES")
 
 
 
